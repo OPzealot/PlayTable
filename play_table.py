@@ -4,7 +4,7 @@
 author: liusili
 @contact: liusili@unionbigdata.com
 @software:
-@file: PlayTable
+@file: play_table
 @time: 2020/4/17
 @desc: 
 """
@@ -73,7 +73,7 @@ class PlayTable(object):
             if os.path.isfile(xml_path):
                 new_xml_path = os.path.join(new_cat_path, xml_name)
                 shutil.copyfile(xml_path, new_xml_path)
-                
+
                 # 更改xml标签信息
                 tree = ET.parse(new_xml_path)
                 root = tree.getroot()
