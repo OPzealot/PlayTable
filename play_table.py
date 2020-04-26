@@ -87,6 +87,17 @@ class PlayTable(object):
 
         print('---End cleaning data---')
 
+    def copy_files(self, new_path):
+        os.makedirs(new_path, exist_ok=False)
+        df = self.sheet
+        for row in df.itertuples():
+            file_path = row[1]
+            file_name = row[2]
+            new_file_path = os.path.join(new_path, file_name)
+            shutil.copy(file_path, new_file_path)
+        
+        print('[FINISH] Files have been copied.')
+
 
 if __name__ == '__main__':
     table_path = r'D:\Working\Tianma\13902\file\复判数据\13902_0417复判结果.xlsx'
