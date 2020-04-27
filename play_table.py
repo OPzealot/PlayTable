@@ -95,13 +95,19 @@ class PlayTable(object):
             file_name = row[2]
             new_file_path = os.path.join(new_path, file_name)
             shutil.copy(file_path, new_file_path)
-        
+
         print('[FINISH] Files have been copied.')
 
 
 if __name__ == '__main__':
-    table_path = r'D:\Working\Tianma\13902\file\复判数据\13902_0417复判结果.xlsx'
-    sample_root = r'D:\Working\Tianma\13902\data\13902_0414_复判'
-    sheet = '数据'
+    # table_path = r'D:\Working\Tianma\13902\file\复判数据\13902_0417复判结果.xlsx'
+    # sample_root = r'D:\Working\Tianma\13902\data\13902_0414_复判'
+    # sheet = '数据'
+    # playTable = PlayTable(table_path, sheet)
+    # playTable.move_judge(sample_root)
+
+    table_path = r'D:\Working\Tianma\13902\file\复判数据\13902_vote_2.xlsx'
+    new_path = r'D:\Working\Tianma\13902\data\13902_0426_judge_vote_2\difficult'
+    sheet = 'vote_2'
     playTable = PlayTable(table_path, sheet)
-    playTable.move_judge(sample_root)
+    playTable.copy_files(new_path)
