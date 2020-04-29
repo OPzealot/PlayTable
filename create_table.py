@@ -23,7 +23,7 @@ def create_table(sample_root, img_format='.jpg'):
             category = root.split(sample_root + '\\')[-1]
             for file in file_lst:
                 if os.path.splitext(file)[-1] == img_format:
-                    img_path = os.path.join(sample_root, file)
+                    img_path = os.path.join(root, file)
                     id += 1
                     df.loc[id] = [img_path, file, category]
             pbar.set_description('Processing category [{}]:'.format(category))
@@ -74,15 +74,32 @@ def add_logic(dataframe, mode='all_different'):
     df = df[index_lst]
     return df
 
+
 if __name__ == '__main__':
     sample_root = r'D:\Working\Tianma\13902\data\13902_0414_judge'
-    judge_path = r'D:\Working\Tianma\13902\file\复判数据\13902_3.xlsx'
-    table_path = r'D:\Working\Tianma\13902\file\复判数据\13902_change.xlsx'
-    out_path = r'D:\Working\Tianma\13902\file\复判数据\13902_vote_2.xlsx'
-    # df = create_table(sample_root)
-    df = pd.read_excel(table_path, index_col=0, sheet_name='change')
-    df = add_logic(df, mode='vote_2')
-    # df = add_judge(df, judge_path, judge='judge_3')
+    judge_path_1 = r'D:\Working\Tianma\13902\file\复判数据\13902_1.xlsx'
+    judge_path_2 = r'D:\Working\Tianma\13902\file\复判数据\13902_2.xlsx'
+    judge_path_3 = r'D:\Working\Tianma\13902\file\复判数据\13902_3.xlsx'
+    judge_path = r'D:\Working\Tianma\13902\file\复判数据\13902_judge.xlsx'
+
     judge_list = ['judge_1', 'judge_2', 'judge_3']
-    # df = add_change(df, judge_list)
-    df.to_excel(out_path, sheet_name='vote_2')
+    change_path = r'D:\Working\Tianma\13902\file\复判数据\13902_change.xlsx'
+    different_path = r'D:\Working\Tianma\13902\file\复判数据\13902_different.xlsx'
+    same_path = r'D:\Working\Tianma\13902\file\复判数据\13902_same.xlsx'
+    vote_2_path = r'D:\Working\Tianma\13902\file\复判数据\13902_vote_2.xlsx'
+    df = create_table(sample_root)
+    df = add_judge(df, judge_path_1, judge='judge_1')
+    df = add_judge(df, judge_path_2, judge='judge_2')
+    df = add_judge(df, judge_path_3, judge='judge_3')
+    df.to_excel(judge_path, sheet_name='judge')
+    df_change = add_change(df, judge_list=judge_list)
+    df_change.to_excel(change_path, sheet_name='change')
+
+    df_different = add_logic(df_change)
+    df_different.to_excel(different_path, sheet_name='different')
+
+    df_same = add_logic(df_change, mode='all_same')
+    df_same.to_excel(same_path, sheet_name='same')
+
+    df_vote_2 = add_logic(df_change, mode='vote_2')
+    df_vote_2.to_excel(vote_2_path, sheet_name='vote_2')
