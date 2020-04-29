@@ -54,10 +54,9 @@ class PlayTable(object):
         print('---Start cleaning data---')
         pbar = tqdm(df.index)
         for i in pbar:
-            old_cat = df.loc[i]['Auto Code']
-            judge_cat = df.loc[i]['Manual Code']
-            tmp_path = df.loc[i]['图片地址']
-            img_name = tmp_path.split('/')[-1]
+            old_cat = df.loc[i]['origin']
+            judge_cat = df.loc[i]['final_judge']
+            img_name = df.loc[i]['file_name']
             xml_name = os.path.splitext(img_name)[0] + '.xml'
 
             img_path = os.path.join(sample_root, old_cat, img_name)
