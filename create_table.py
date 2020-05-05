@@ -103,10 +103,11 @@ def main():
     df_vote_2 = add_logic(df_change, mode='vote_2')
     df_vote_2.to_excel(vote_2_path, sheet_name='vote_2')
 
+
 if __name__ == '__main__':
     different_path = r'D:\Working\Tianma\13902\file\复判数据\13902_different.xlsx'
     engineer_path = r'D:\Working\Tianma\13902\file\复判数据\13902_different_engineer.xlsx'
     judge_path = r'D:\Working\Tianma\13902\file\复判数据\13902_4.xlsx'
     df = pd.read_excel(different_path, index_col=0, sheet_name='different')
-    df = add_judge(df, judge_path, judge='engineer')
+    df = add_judge(df, judge_path, judge='final_judge')
     df.to_excel(engineer_path, sheet_name='engineer')
