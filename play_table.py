@@ -54,9 +54,10 @@ class PlayTable(object):
         print('---Start cleaning data---')
         pbar = tqdm(df.index)
         for i in pbar:
-            old_cat = df.loc[i]['origin']
-            judge_cat = df.loc[i]['final_judge']
-            img_name = df.loc[i]['file_name']
+            old_cat = df.loc[i]['Auto Code']
+            judge_cat = df.loc[i]['Manual Code']
+            file_name = df.loc[i]['图片地址']
+            img_name = file_name.split('/')[-1]
             xml_name = os.path.splitext(img_name)[0] + '.xml'
 
             img_path = os.path.join(sample_root, old_cat, img_name)
@@ -99,14 +100,14 @@ class PlayTable(object):
 
 
 if __name__ == '__main__':
-    # table_path = r'D:\Working\Tianma\13902\file\复判数据\13902_0417复判结果.xlsx'
-    # sample_root = r'D:\Working\Tianma\13902\data\13902_0414_复判'
-    # sheet = '数据'
-    # playTable = PlayTable(table_path, sheet)
-    # playTable.move_judge(sample_root)
-
-    table_path = r'D:\Working\Tianma\13902\file\复判数据\13902_vote_2.xlsx'
-    new_path = r'D:\Working\Tianma\13902\data\13902_0426_judge_vote_2\difficult'
-    sheet = 'vote_2'
+    table_path = r'D:\Working\Tianma\13902\file\复判数据\0503\13902_0430_judge.xlsx'
+    sample_root = r'D:\Working\Tianma\13902\data\13902_0430_judge'
+    sheet = '数据'
     playTable = PlayTable(table_path, sheet)
-    playTable.copy_files(new_path)
+    playTable.move_judge(sample_root)
+
+    # table_path = r'D:\Working\Tianma\13902\file\复判数据\13902_vote_2.xlsx'
+    # new_path = r'D:\Working\Tianma\13902\data\13902_0426_judge_vote_2\difficult'
+    # sheet = 'vote_2'
+    # playTable = PlayTable(table_path, sheet)
+    # playTable.copy_files(new_path)
