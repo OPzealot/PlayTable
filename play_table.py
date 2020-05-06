@@ -13,6 +13,7 @@ import os
 import shutil
 from tqdm import tqdm
 import xml.etree.ElementTree as ET
+import numpy as np
 
 
 class PlayTable(object):
@@ -57,10 +58,13 @@ class PlayTable(object):
             old_cat = df.loc[i]['Auto Code']
             judge_cat = df.loc[i]['Manual Code']
             file_name = df.loc[i]['图片地址']
+            if file_name is np.nan:
+                continue
             img_name = file_name.split('/')[-1]
             xml_name = os.path.splitext(img_name)[0] + '.xml'
 
             img_path = os.path.join(sample_root, old_cat, img_name)
+            # img_path = os.path.join(sample_root, img_name)
             xml_path = os.path.join(sample_root, old_cat, xml_name)
 
             new_cat_path = os.path.join(new_path, judge_cat)
@@ -100,8 +104,8 @@ class PlayTable(object):
 
 
 if __name__ == '__main__':
-    table_path = r'D:\Working\Tianma\13902\file\复判数据\0503\13902_0430_judge.xlsx'
-    sample_root = r'D:\Working\Tianma\13902\data\13902_0430_judge'
+    table_path = r'D:\Working\Tianma\13902\TEST\13902_0413-0429.xlsx'
+    sample_root = r'D:\Working\Tianma\13902\TEST\13902_testset'
     sheet = '数据'
     playTable = PlayTable(table_path, sheet)
     playTable.move_judge(sample_root)
