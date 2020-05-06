@@ -14,6 +14,7 @@ import shutil
 from tqdm import tqdm
 import xml.etree.ElementTree as ET
 import numpy as np
+import json
 
 
 class PlayTable(object):
@@ -102,13 +103,82 @@ class PlayTable(object):
 
         print('[FINISH] Files have been copied.')
 
+    def get_confusion_matrix(self, deploy_path, out_path=None):
+        category_path = os.path.join(deploy_path, 'classes.txt')
+        json_path = os.path.join(deploy_path, 'rule.json')
+        category = []
+        for line in open(category_path, 'r'):
+            temp_line = line.strip()
+            if temp_line:
+                category.append(temp_line)
+        with open(json_path, 'r') as f:
+            config = json.load(f)
+
+        if config['other_name'] not in category:
+            category.append(config['other_name'])
+
+        if config['false_name'] not in category:
+            category.append(config['false_name'])
+
+        n = len(category)
+        cm_df = pd.DataFrame(np.zeros([n, n], dtype=np.int), index=category, columns=category)
+
+        deploy_df = self.sheet
+
+        for i in deploy_df.index:
+            cat = deploy_df.loc[i, 'category']
+            predict = deploy_df.loc[i, 'inference']
+            if cat not in category:
+                continue
+            cm_df.loc[cat, predict] += 1
+
+        predict_sum = []
+        ori_sum = []
+        precision_lst = []
+        recall_lst = []
+        correct_lst = []
+
+        for i in category:
+            predict_cnt = sum(cm_df[i])
+            ori_cnt = sum(cm_df.loc[i])
+            predict_sum.append(predict_cnt)
+            ori_sum.append(ori_cnt)
+            correct = cm_df[i][i]
+            correct_lst.append(correct)
+            precision = round(correct / predict_cnt, 3)
+            recall = round(correct / ori_cnt, 3)
+            precision_lst.append(precision)
+            recall_lst.append(recall)
+
+        cm_df.loc['预测合计'] = predict_sum
+        cm_df.loc['准确率'] = precision_lst
+        cm_df['判图总量'] = ori_sum + [None] * 2
+        cm_df['召回率'] = recall_lst + [None] * 2
+
+        results_columns = ['判图总量', '预测合计', '一致数量', '准确率', '召回率']
+        results_df = pd.DataFrame(index=category, columns=results_columns)
+        results_df['判图总量'] = ori_sum
+        results_df['预测合计'] = predict_sum
+        results_df['一致数量'] = correct_lst
+        results_df['准确率'] = precision_lst
+        results_df['召回率'] = recall_lst
+
+        writer = pd.ExcelWriter(out_path)
+        results_df.to_excel(writer, sheet_name='Results')
+        cm_df.to_excel(writer, sheet_name='CM')
+
+        writer.save()
+
+        print('[FINISH] Confusion matrix has been writen to path: {}.'.format(out_path))
+
 
 if __name__ == '__main__':
-    table_path = r'D:\Working\Tianma\13902\TEST\13902_0413-0429.xlsx'
-    sample_root = r'D:\Working\Tianma\13902\TEST\13902_testset'
-    sheet = '数据'
+    table_path = r'D:\Working\Tianma\13902\TEST\deploy_results.xlsx'
+    deploy_path = r'D:\Working\Tianma\13902\deploy'
+    out_path = r'D:\Working\Tianma\13902\TEST\13902_CM.xlsx'
+    sheet = 'results'
     playTable = PlayTable(table_path, sheet)
-    playTable.move_judge(sample_root)
+    playTable.get_confusion_matrix(deploy_path, out_path)
 
     # table_path = r'D:\Working\Tianma\13902\file\复判数据\13902_vote_2.xlsx'
     # new_path = r'D:\Working\Tianma\13902\data\13902_0426_judge_vote_2\difficult'
