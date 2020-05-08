@@ -79,12 +79,13 @@ def record_dataset(sample_root, img_format='.jpg'):
 
 
 def record_product(sample_root, img_format='.jpg'):
-    columns = ['file_name', 'product', 'category']
+    columns = ['img_name', 'product', 'category']
     df = pd.DataFrame(columns=columns)
     id = 0
     for root, _, file_lst in os.walk(sample_root):
         if len(file_lst) > 0:
-            for file in file_lst:
+            pbar = tqdm(file_lst)
+            for file in pbar:
                 if os.path.splitext(file)[-1] == img_format:
                     info_lst = root.split('\\')
                     product = info_lst[-3]
@@ -92,6 +93,7 @@ def record_product(sample_root, img_format='.jpg'):
                     category = cat.split('-')[-1]
                     id += 1
                     df.loc[id] = [file, product, category]
+                pbar.set_description('Processing cateogry [{}]'.format(category))
 
     product_path = sample_root + '_product.xlsx'
     df.to_excel(product_path, sheet_name='product')
@@ -99,5 +101,5 @@ def record_product(sample_root, img_format='.jpg'):
 
 
 if __name__ == '__main__':
-    sample_root = r'D:\Working\Tianma\13902\data\13902_0429'
-    record_dataset(sample_root)
+    sample_root = r'D:\Working\Tianma\13902\TEST\13902_testset_raw'
+    record_product(sample_root)
