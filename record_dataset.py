@@ -36,6 +36,9 @@ def get_info_from_xml(xml_path, mode='max_area'):
     root = tree.getroot()
     area = 0
 
+    category = None
+    bbox_out =None
+
     for obj in root.findall('object'):
         bbox = get_and_check(obj, 'bndbox', 1)
         xmin = int(get_and_check(bbox, 'xmin', 1).text)
@@ -47,19 +50,19 @@ def get_info_from_xml(xml_path, mode='max_area'):
             if bbox_area > area:
                 area = bbox_area
                 category = get_and_check(obj, 'name', 1).text
-                bbox = [xmin, ymin, xmax, ymax]
+                bbox_out = [xmin, ymin, xmax, ymax]
 
-    return category, bbox
+    return category, bbox_out
 
 
 def record_dataset(sample_root, img_format='.jpg'):
     columns = ['file_name', 'category', 'bbox']
     df = pd.DataFrame(columns=columns)
     id = 0
-    pbar = tqdm(os.walk(sample_root))
-    for root, _, file_lst in pbar:
+    for root, _, file_lst in os.walk(sample_root):
         if len(file_lst) > 0:
-            for file in file_lst:
+            pbar = tqdm(file_lst)
+            for file in pbar:
                 if os.path.splitext(file)[-1] == img_format:
                     img_file = file
                     file_name = os.path.splitext(file)[0]
@@ -68,7 +71,7 @@ def record_dataset(sample_root, img_format='.jpg'):
                         category, bbox = get_info_from_xml(xml_path)
                         id += 1
                         df.loc[id] = [img_file, category, bbox]
-        pbar.set_description('Processing category [{}]:'.format(category))
+                pbar.set_description('Processing cateogry [{}]'.format(category))
 
     record_path = sample_root + '_record.xlsx'
     df.to_excel(record_path, sheet_name='data')
