@@ -103,7 +103,7 @@ class PlayTable(object):
 
         print('[FINISH] Files have been copied.')
 
-    def get_confusion_matrix(self, deploy_path, out_path=None):
+    def get_confusion_matrix(self, deploy_path, out_path=None, **category_convert):
         category_path = os.path.join(deploy_path, 'classes.txt')
         json_path = os.path.join(deploy_path, 'rule.json')
         category = []
@@ -111,6 +111,14 @@ class PlayTable(object):
             temp_line = line.strip()
             if temp_line:
                 category.append(temp_line)
+
+        for cate in category_convert.keys():
+            if cate in category:
+                category.remove(cate)
+                category.extend(category_convert[cate])
+
+        category = sorted(list(set(category)))
+
         with open(json_path, 'r') as f:
             config = json.load(f)
 
@@ -173,9 +181,9 @@ class PlayTable(object):
 
 
 if __name__ == '__main__':
-    table_path = r'D:\Working\Tianma\13902\TEST\deploy_results.xlsx'
-    deploy_path = r'D:\Working\Tianma\13902\deploy'
-    out_path = r'D:\Working\Tianma\13902\TEST\13902_CM.xlsx'
+    table_path = r'D:\Working\Tianma\13902\TEST\0515\deploy_results.xlsx'
+    deploy_path = r'D:\Working\Tianma\13902\deploy\deploy_0515'
+    out_path = r'D:\Working\Tianma\13902\TEST\0515\13902_CM.xlsx'
     sheet = 'results'
     playTable = PlayTable(table_path, sheet)
     playTable.get_confusion_matrix(deploy_path, out_path)
