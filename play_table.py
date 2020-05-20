@@ -181,12 +181,17 @@ class PlayTable(object):
 
 
 if __name__ == '__main__':
-    table_path = r'D:\Working\Tianma\13902\TEST\0515\deploy_results.xlsx'
-    deploy_path = r'D:\Working\Tianma\13902\deploy\deploy_0515'
-    out_path = r'D:\Working\Tianma\13902\TEST\0515\13902_CM.xlsx'
+    table_path = r'D:\Working\Tianma\13902\TEST\0519\deploy_results.xlsx'
+    deploy_path = r'D:\Working\Tianma\13902\deploy\deploy_0519'
+    out_path = r'D:\Working\Tianma\13902\TEST\0519\13902_CM.xlsx'
+
     sheet = 'results'
+    category_convert = {'STR02': ['STR02O', 'STR02X'],
+                        'STR05': ['STR05O', 'STR05X'],
+                        'STR05B': ['STR05X']}
+
     playTable = PlayTable(table_path, sheet)
-    playTable.get_confusion_matrix(deploy_path, out_path)
+    playTable.get_confusion_matrix(deploy_path, out_path, **category_convert)
 
     # table_path = r'D:\Working\Tianma\13902\file\复判数据\13902_vote_2.xlsx'
     # new_path = r'D:\Working\Tianma\13902\data\13902_0426_judge_vote_2\difficult'

@@ -74,6 +74,7 @@ def add_logic(dataframe, mode='all_different'):
     df = df[index_lst]
     return df
 
+
 def main():
     sample_root = r'D:\Working\Tianma\13902\data\13902_0414_judge'
     judge_path_1 = r'D:\Working\Tianma\13902\file\复判数据\13902_1.xlsx'

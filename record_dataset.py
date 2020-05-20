@@ -79,7 +79,7 @@ def record_dataset(sample_root, img_format='.jpg'):
 
 
 def record_product(sample_root, img_format='.jpg'):
-    columns = ['img_name', 'product', 'category']
+    columns = ['image_name', 'product', 'category']
     df = pd.DataFrame(columns=columns)
     id = 0
     for root, _, file_lst in os.walk(sample_root):
@@ -93,7 +93,7 @@ def record_product(sample_root, img_format='.jpg'):
                     category = cat.split('-')[-1]
                     id += 1
                     df.loc[id] = [file, product, category]
-                pbar.set_description('Processing cateogry [{}]'.format(category))
+                    pbar.set_description('Processing cateogry [{}]'.format(category))
 
     product_path = sample_root + '_product.xlsx'
     df.to_excel(product_path, sheet_name='product')
