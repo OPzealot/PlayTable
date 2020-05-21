@@ -92,6 +92,59 @@ class PlayTable(object):
 
         print('---End cleaning data---')
 
+    def move_by_condition(self, sample_root, new_path, same=False,  **condition):
+        os.makedirs(new_path, exist_ok=False)
+        df = self.sheet
+        pbar = tqdm(total=len(df))
+        for row in df.itertuples():
+            img_name = getattr(row, 'image_name')
+            product = getattr(row, 'product')
+            size = getattr(row, 'size')
+            category = getattr(row, 'category')
+            inference = getattr(row, 'inference')
+            short = getattr(row, 'short')
+            score = getattr(row, 'score')
+
+            if img_name is np.nan:
+                pbar.update(1)
+                continue
+
+            if 'product' in condition:
+                if condition['product'] != product:
+                    pbar.update(1)
+                    continue
+
+            if same:
+                if category != inference:
+                    pbar.update(1)
+                    continue
+            else:
+                if category == inference:
+                    pbar.update(1)
+                    continue
+
+            file_name = img_name.split('/')[-1]
+            xml_name = os.path.splitext(file_name)[0] + '.xml'
+
+            img_path = os.path.join(sample_root, category, img_name)
+            xml_path = os.path.join(sample_root, category, xml_name)
+
+            new_dir = os.path.join(new_path, category)
+            os.makedirs(new_dir, exist_ok=True)
+
+            if os.path.isfile(img_path):
+                new_img_path = os.path.join(new_dir, img_name)
+                shutil.copyfile(img_path, new_img_path)
+
+            if os.path.isfile(xml_path):
+                new_xml_path = os.path.join(new_dir, xml_name)
+                shutil.copyfile(xml_path, new_xml_path)
+
+            pbar.set_description('Processing image')
+            pbar.update(1)
+
+        print('---Finish moving data by condition---')
+
     def copy_files(self, new_path):
         os.makedirs(new_path, exist_ok=False)
         df = self.sheet
@@ -181,20 +234,30 @@ class PlayTable(object):
 
 
 if __name__ == '__main__':
-    table_path = r'D:\Working\Tianma\13902\TEST\0519\deploy_results.xlsx'
-    deploy_path = r'D:\Working\Tianma\13902\deploy\deploy_0519'
-    out_path = r'D:\Working\Tianma\13902\TEST\0519\13902_CM.xlsx'
+    # --混淆矩阵-- #
+    # table_path = r'D:\Working\Tianma\13902\TEST\0519\deploy_results.xlsx'
+    # deploy_path = r'D:\Working\Tianma\13902\deploy\deploy_0519'
+    # out_path = r'D:\Working\Tianma\13902\TEST\0519\13902_CM.xlsx'
+    #
+    # sheet = 'results'
+    # category_convert = {'STR02': ['STR02O', 'STR02X'],
+    #                     'STR05': ['STR05O', 'STR05X'],
+    #                     'STR05B': ['STR05X']}
+    #
+    # playTable = PlayTable(table_path, sheet)
+    # playTable.get_confusion_matrix(deploy_path, out_path, **category_convert)
 
-    sheet = 'results'
-    category_convert = {'STR02': ['STR02O', 'STR02X'],
-                        'STR05': ['STR05O', 'STR05X'],
-                        'STR05B': ['STR05X']}
-
-    playTable = PlayTable(table_path, sheet)
-    playTable.get_confusion_matrix(deploy_path, out_path, **category_convert)
-
+    # --复制文件-- #
     # table_path = r'D:\Working\Tianma\13902\file\复判数据\13902_vote_2.xlsx'
     # new_path = r'D:\Working\Tianma\13902\data\13902_0426_judge_vote_2\difficult'
     # sheet = 'vote_2'
     # playTable = PlayTable(table_path, sheet)
     # playTable.copy_files(new_path)
+
+    # --根据条件移动文件-- #
+    table_path = r'D:\Working\Tianma\13902\TEST\0519\test_4\deploy_results.xlsx'
+    sample_root = r'D:\Working\Tianma\13902\TEST\13902_testset'
+    new_path = r'D:\Working\Tianma\13902\TEST\13902_testset_655'
+    sheet = 'results'
+    playTable = PlayTable(table_path, sheet)
+    playTable.move_by_condition(sample_root, new_path, product='L3655B0408EB00')
