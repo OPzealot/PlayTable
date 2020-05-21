@@ -101,5 +101,5 @@ def record_product(sample_root, img_format='.jpg'):
 
 
 if __name__ == '__main__':
-    sample_root = r'D:\Working\Tianma\13902\TEST\13902_testset_raw'
-    record_product(sample_root)
+    sample_root = r'D:\Working\Tianma\13902\TEST\13902_testset'
+    record_dataset(sample_root)
